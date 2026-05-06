@@ -50,22 +50,22 @@ def main():
     contrib_bnb = (var_usdvnd / (var_bnb + var_usdvnd)) * 100
 
     # Console Output
-    print("### Empirical Variance Analysis (Annualized)\n")
-    print("| Asset Pair | Annualized Variance |")
-    print("|------------|---------------------|")
-    print(f"| ALGO/USD   | {var_algo:.6f}            |")
-    print(f"| BNB/USD    | {var_bnb:.6f}            |")
-    print(f"| USD/VND    | {var_usdvnd:.6f}            |")
-    print("\n### Variance Decomposition")
-    print(f"- USD/VND contribution to ALGO OPEX variance: {contrib_algo:.4f}%")
-    print(f"- USD/VND contribution to BNB OPEX variance: {contrib_bnb:.4f}%\n")
+    print(\"### Empirical Variance Analysis (Annualized)\\n\")
+    print(\"| Asset Pair | Annualized Variance |\")
+    print(\"|------------|---------------------|\")
+    print(f\"| ALGO/USD   | {var_algo:.6f}            |\")
+    print(f\"| BNB/USD    | {var_bnb:.6f}            |\")
+    print(f\"| USD/VND    | {var_usdvnd:.6f}            |\")
+    print(\"\\n### Variance Decomposition\")
+    print(f\"- USD/VND contribution to ALGO OPEX variance: {contrib_algo:.4f}%\")
+    print(f\"- USD/VND contribution to BNB OPEX variance: {contrib_bnb:.4f}%\\n\")
 
     # Academic Conclusion
     is_negligible = contrib_algo < 1.0 and contrib_bnb < 1.0
-    conclusion = (f"The empirical analysis confirms that the USD/VND exchange rate variance contribution is "
-                  f"{'statistically negligible (< 1%)' if is_negligible else 'NOT statistically negligible (> 1%)'}, "
-                  f"thus {'justifying' if is_negligible else 'challenging'} the assumption "
-                  r"\mathbb{V}[\mathcal{E}_{F/L}] \approx 0 in the OPEX model.")
+    conclusion = (f\"The empirical analysis confirms that the USD/VND exchange rate variance contribution is \"
+                  f\"{'statistically negligible (< 1%)' if is_negligible else 'NOT statistically negligible (> 1%)'}, \"
+                  f\"thus {'justifying' if is_negligible else 'challenging'} the assumption \"
+                  r\"\\mathbb{V}[\\mathcal{E}_{F/L}] \\approx 0 in the OPEX model.\")
     print(conclusion)
 
     # Visualization
@@ -93,5 +93,5 @@ def main():
     plt.savefig('results/variance_comparison.png', dpi=300, bbox_inches='tight')
     plt.close()
 
-if __name__ == "__main__":
+if __name__ == \"__main__\":
     main()

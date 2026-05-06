@@ -1,48 +1,53 @@
-# Web3 B2G Infrastructure OPEX Simulation
+# CPWI-B2G-OPEX-Simulation
 
-This repository contains a standalone Python script designed to run a 10,000-iteration Monte Carlo simulation. It calculates the Monetary Value-at-Risk (VaR) of Operational Expenditure (OPEX) overruns for an Algorand-based B2G auction system.
+Monte Carlo simulation and empirical variance analysis for Web3 B2G (Business-to-Government) infrastructure Operational Expenditure (OPEX) management.
 
-## Mathematical Model
+## Project Overview
 
-The simulation employs the **Geometric Brownian Motion (GBM)** model to predict end-of-year Algorand ($ALGO) prices. The formula used is:
+This repository contains tools to analyze and simulate the monetary risks associated with crypto-based protocol fees in B2G contracts. Specifically, it compares different treasury management policies for Algorand-based auction systems.
 
-$$S_T = S_0 \times \exp\left((0 - 0.5 \times \sigma^2) \times T + \sigma \times \sqrt{T} \times Z\right)$$
+### Key Components
 
-Where:
-- $S_T$ = Simulated end-of-year ALGO price
-- $S_0$ = Initial ALGO price
-- $\sigma$ = Annualized volatility (60%)
-- $T$ = Time horizon (1 year)
-- $Z$ = Standard normal random variable
+1.  **Monte Carlo Simulation (`simulation.py`)**: 
+    - Calculates Monetary Value-at-Risk (VaR) for OPEX overruns.
+    - Compares "Spot Market Baseline" vs. "DCA + 50% Reserve" policies.
+    - Isolates Net OPEX from Reserve Assets (Mark-to-Market).
 
-### Policy Comparison
-1. **Spot Market Baseline**: The organization buys ALGO at the end-of-year simulated price $S_T$.
-2. **DCA + 50% Reserve**: The organization purchases 50% more tokens upfront/progressively, assuming an average purchase price of $P_{dca} = (S_0 + S_T) / 2$.
+2.  **Empirical Variance Analysis (`src/empirical_variance_analysis.py`)**:
+    - Validates the assumption that Fiat-to-Local (e.g., USD/VND) exchange rate variance is negligible compared to Token-to-Fiat (e.g., ALGO/USD) variance.
+    - Performs variance decomposition using historical data from Jan 2024 to May 2026.
 
-## How to Run
+## Data
 
-### Prerequisites
-Ensure you have Python 3.8+ installed.
+The simulation relies on historical price data located in the `data/` folder:
+- `algo-usd.csv`: Historical ALGO/USD prices.
+- `bnb-usd.csv`: Historical BNB/USD prices (for comparison).
+- `usd-vnd.csv`: Historical USD/VND exchange rates.
 
-### Installation
-Install the exact dependencies to ensure reproducibility:
+## Installation
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### Execution
-Run the simulation script or the empirical validation script from the root directory:
-```bash
-# To run the Monte Carlo simulation
-python simulation.py
+## Usage
 
-# To run the empirical variance analysis
+### Run OPEX Simulation
+```bash
+python simulation.py
+```
+
+### Run Empirical Variance Analysis
+```bash
 python src/empirical_variance_analysis.py
 ```
 
-### Empirical Validation
-The script `src/empirical_variance_analysis.py` validates the assumption that the Fiat-to-Local (USD/VND) exchange rate variance is negligible compared to the Token-to-Fiat (ALGO/USD) variance. This is a critical prerequisite for the simplified OPEX model used in the academic paper.
+## Results
 
-### Results
-- `results/opex_var_histogram.png`: Distribution of cost overruns for both policies.
-- `results/variance_comparison.png`: Comparison of annualized variances (ALGO vs. BNB vs. USD/VND).
+Results and visualizations are stored in the `results/` directory.
+
+- `opex_var_histogram.png`: Distribution of OPEX costs across policies.
+- `variance_comparison.png`: Comparison of annualized variances (Log Scale).
+
+---
+*Developed as part of a Q1 academic paper on Web3 B2G Infrastructure.*
