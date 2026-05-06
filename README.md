@@ -31,10 +31,18 @@ pip install -r requirements.txt
 ```
 
 ### Execution
-Run the simulation script from the root directory:
+Run the simulation script or the empirical validation script from the root directory:
 ```bash
+# To run the Monte Carlo simulation
 python simulation.py
+
+# To run the empirical variance analysis
+python src/empirical_variance_analysis.py
 ```
 
-### Expected Output
-The script will print a markdown-formatted table with the risk metrics (Probability of >20% overrun, 95% VaR, 99% VaR) directly to your console. It will also generate a high-quality histogram comparing the cost overruns of both policies, saved as `results/opex_var_histogram.png`.
+### Empirical Validation
+The script `src/empirical_variance_analysis.py` validates the assumption that the Fiat-to-Local (USD/VND) exchange rate variance is negligible compared to the Token-to-Fiat (ALGO/USD) variance. This is a critical prerequisite for the simplified OPEX model used in the academic paper.
+
+### Results
+- `results/opex_var_histogram.png`: Distribution of cost overruns for both policies.
+- `results/variance_comparison.png`: Comparison of annualized variances (ALGO vs. BNB vs. USD/VND).
