@@ -4,12 +4,12 @@ This repository provides a comprehensive framework for simulating, validating, a
 
 ## 📌 Project Overview
 
-Developing public infrastructure on a decentralized blockchain introduces financial volatility. This project quantifies the risk of cost overruns when using $ALGO for transaction fees and evaluates treasury management strategies to mitigate this risk.
+Developing public infrastructure on a decentralized blockchain introduces financial volatility. This project quantifies the risk of cost overruns when using $ALGO for transaction fees and evaluates treasury management strategies to mitigate these risks using probabilistic modeling.
 
 ### Core Objectives:
 1.  **Risk Quantification**: Using Monte Carlo simulations to calculate Monetary Value-at-Risk (VaR).
 2.  **Empirical Validation**: Analyzing historical data to justify the simplified volatility model.
-3.  **Real-World Stress Testing**: Deploying a smart contract to Algorand MainNet to measure actual Time-to-Finality (TTF) and Protocol Fees under load.
+3.  **Real-World Stress Testing**: Deploying a smart contract to Algorand MainNet to measure actual Time-to-Finality (TTF) and Protocol Fees under load, with built-in compliance mechanics (Time Window & KYC Simulation).
 
 ---
 
@@ -25,7 +25,7 @@ Validates that the variance of the Token/Fiat (ALGO/USD) pair is the dominant ri
 
 ### 3. MainNet Stress Test (`mainnet_stress_test/`)
 A suite of tools for real-world validation on the Algorand MainNet.
-- `auction_contract.py`: A PyTeal-based smart contract featuring inner transaction refunds.
+- `auction_contract.py`: A PyTeal-based smart contract featuring inner transaction refunds, a 24-hour time window constraint, and a participant Opt-in requirement (KYC/Whitelist simulation).
 - `deploy_mainnet.py`: Deployment automation script.
 - `async_benchmark.py`: High-concurrency stress tester (50 RPS) using `asyncio`.
 - `utils.py`: Account sanity checks and balance monitoring.

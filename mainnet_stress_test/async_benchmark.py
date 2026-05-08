@@ -27,6 +27,36 @@ async def fetch_highest_bid(url, token, app_id):
         print(f"Error fetching state: {e}")
     return 0
 
+async def ensure_opted_in(client, sender, private_key, app_id):
+    """Checks if sender is opted in, if not, sends an OptIn transaction."""
+    try:
+        account_info = client.account_info(sender)
+        apps_local_state = account_info.get('apps-local-state', [])
+        for app in apps_local_state:
+            if app['id'] == app_id:
+                print(f"Sender {sender} is already opted in to App {app_id}.")
+                return True
+        
+        print(f"Sender {sender} not opted in. Sending OptIn transaction...")
+        sp = client.suggested_params()
+        txn = transaction.ApplicationOptInTxn(sender, sp, app_id)
+        signed_txn = txn.sign(private_key)
+        txid = client.send_transaction(signed_txn)
+        print(f"OptIn transaction sent: {txid}")
+        # Wait for confirmation
+        wait_rounds = 4
+        while wait_rounds > 0:
+            status = client.pending_transaction_info(txid)
+            if status.get("confirmed-round", 0) > 0:
+                print(f"OptIn confirmed in round {status['confirmed-round']}")
+                return True
+            wait_rounds -= 1
+            await asyncio.sleep(1)
+        return False
+    except Exception as e:
+        print(f"Error during OptIn: {e}")
+        return False
+
 def prepare_transactions(client, sender, private_key, app_id, app_address, start_bid):
     print(f"Preparing {TOTAL_TXNS} transaction groups offline...")
     sp = client.suggested_params()
@@ -136,6 +166,12 @@ async def main():
     print(f"App ID: {app_id} | App Address: {app_address}")
     
     client = algod.AlgodClient(token, url)
+    
+    # Ensure sender is opted in (KYC requirement)
+    if not await ensure_opted_in(client, sender, private_key, app_id):
+        print("ERROR: Could not ensure sender is opted in. Exiting.")
+        return
+
     start_bid = await fetch_highest_bid(url, token, app_id)
     print(f"Current highest bid is: {start_bid} microALGO.")
     
