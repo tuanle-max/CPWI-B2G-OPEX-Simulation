@@ -1,29 +1,28 @@
 import os
 import json
-import base64
 
 files_to_push = [
-    "README.md",
-    "requirements.txt",
     "simulation.py",
-    "data/algo-usd.csv",
-    "data/bnb-usd.csv",
-    "data/usd-vnd.csv",
-    "results/opex_var_histogram.txt",
-    "results/variance_comparison.txt",
-    "scratch/encode_results.py",
-    "src/empirical_variance_analysis.py"
+    "src/empirical_variance_analysis.py",
+    "mainnet_stress_test/auction_contract.py",
+    "mainnet_stress_test/async_benchmark.py",
+    "mainnet_stress_test/deploy_mainnet.py",
+    "mainnet_stress_test/utils.py",
+    "README.md",
+    "results/simulation_summary.md",
+    "updated_treasury_results.txt",
+    "requirements.txt",
+    "requirements_mainnet.txt",
+    ".gitignore"
 ]
 
-result = []
-for file_path in files_to_push:
-    full_path = os.path.join(os.getcwd(), file_path.replace("/", os.sep))
-    if os.path.exists(full_path):
-        with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
-            content = f.read()
-            result.append({
-                "path": file_path,
-                "content": content
+payload = []
+for f in files_to_push:
+    if os.path.exists(f):
+        with open(f, "r", encoding="utf-8") as file:
+            payload.append({
+                "path": f,
+                "content": file.read()
             })
 
-print(json.dumps(result))
+print(json.dumps(payload))

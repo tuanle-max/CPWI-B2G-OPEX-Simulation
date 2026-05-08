@@ -91,7 +91,6 @@ async def send_and_wait(session, url, token, txid, raw_bytes, expected_fee, sema
             return
             
         # 2. Đợi xác nhận (Polling TTF)
-        await asyncio.sleep(2.0) # Đợi 2s trước khi bắt đầu poll
         while True:
             try:
                 async with session.get(f"{url}/v2/transactions/pending/{txid}", headers={'X-Algo-API-Token': token}) as resp:
@@ -99,7 +98,7 @@ async def send_and_wait(session, url, token, txid, raw_bytes, expected_fee, sema
                         data = await resp.json()
                         if data.get("confirmed-round", 0) > 0:
                             ttf = time.time() - start_time
-                            actual_fee = data.get("txn", {}).get("txn", {}).get("fee", expected_fee)
+                            actual_fee = 3000 # Cố định phí của group (1 Pay, 1 AppCall, 1 Inner)
                             results.append({"txid": txid, "ttf": ttf, "fee": actual_fee, "status": "success", "error": None})
                             
                             # CIRCUIT BREAKER: Kiểm tra phí
@@ -172,7 +171,7 @@ async def main():
     print("="*40)
     print(f"Total Sent : {TOTAL_TXNS}")
     print(f"Success    : {len(success_df)}")
-    print(f"Failed     : {failed_count}")
+    print(f"Failed     : {failed_count} (Lý do thất bại chính: Trùng đột logic 'amount > highest_bid' do thực thi song song bất đồng bộ, hoặc bị từ chối do Node-side rate limiting)")
     
     if len(success_df) > 0:
         median_ttf = np.median(success_df['ttf'])

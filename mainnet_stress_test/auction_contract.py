@@ -7,6 +7,7 @@ def approval_program():
     on_creation = Seq([
         App.globalPut(highest_bidder, Global.creator_address()),
         App.globalPut(highest_bid, Int(0)),
+        App.globalPut(Bytes("auction_end"), Global.latest_timestamp() + Int(86400)),
         Return(Int(1))
     ])
 
@@ -16,6 +17,10 @@ def approval_program():
         Assert(Gtxn[0].type_enum() == TxnType.Payment),
         Assert(Gtxn[1].type_enum() == TxnType.ApplicationCall),
         Assert(Gtxn[1].application_id() == Global.current_application_id()),
+        
+        # Compliance Checks (Reviewer Requirements)
+        Assert(Global.latest_timestamp() <= App.globalGet(Bytes("auction_end"))),
+        Assert(App.optedIn(Gtxn[0].sender(), Global.current_application_id())),
         
         # Payment must be directed to the app address
         Assert(Gtxn[0].receiver() == Global.current_application_address()),
