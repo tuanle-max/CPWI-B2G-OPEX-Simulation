@@ -40,7 +40,7 @@ def deploy():
     sp = client.suggested_params()
     
     # Global state schema: 1 integer (highest_bid) and 1 byte slice (highest_bidder)
-    global_schema = transaction.StateSchema(num_uints=1, num_byte_slices=1)
+    global_schema = transaction.StateSchema(num_uints=2, num_byte_slices=1)
     local_schema = transaction.StateSchema(num_uints=0, num_byte_slices=0)
     
     print("Creating ApplicationCreateTxn...")

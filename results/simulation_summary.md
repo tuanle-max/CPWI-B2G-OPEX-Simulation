@@ -18,7 +18,7 @@ This document summarizes the quantitative risk analysis for the Algorand B2G Auc
 | **95% Monetary VaR (USD)** | **$22.28** | **$5.57** |
 | **99% Monetary VaR (USD)** | **$42.66** | **$10.66** |
 
-## 3. Analysis & Strategy Recommendation
+## 3. Analysis & Strategy Effectiveness
 
 The simulation highlights the high financial risk associated with the **Spot Market Baseline** policy, where ALGO is purchased only when needed. Under this policy, there is a **27.18% probability** that the actual OPEX will exceed the fixed Fiat budget by more than 20%.
 
@@ -26,5 +26,5 @@ In contrast, the **DCA + 50% Reserve** strategy significantly stabilizes costs:
 - It reduces the 20% overrun probability by more than half (to **10.03%**).
 - It drastically lowers the tail risk (99% VaR) from $42.66 down to **$10.66**.
 
-### Recommendation:
-Government agencies deploying on Algorand should adopt a **DCA + Reserve** treasury model to ensure budget predictability and mitigate the impact of native token price volatility.
+### Implication:
+The analysis shows that adopting a **DCA + Reserve** treasury model effectively ensures budget predictability and mitigates the impact of native token price volatility for government agencies deploying on Algorand.

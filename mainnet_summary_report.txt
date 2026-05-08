@@ -3,7 +3,7 @@
 ========================================
 Total Sent : 2500
 Success    : 325
-Failed     : 2175 (Lý do thất bại chính: Trùng đột logic 'amount > highest_bid' do thực thi song song bất đồng bộ, hoặc bị từ chối do Node-side rate limiting)
+Failed     : 2175 (Failure reasons: State contention (logic asserts) and Node-side rate limiting (429 errors))
 
 [PERFORMANCE]
 Median TTF : 7.49 seconds

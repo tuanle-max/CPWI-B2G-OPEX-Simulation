@@ -73,16 +73,8 @@ Lac Viet Auction Technology JSC, Hanoi, Vietnam\\
 %
 \begin{abstract}
 Blockchain can improve transparency and auditability in public services, but its
-adoption in Business-to-Government (B2G) settings is constrained by a practical
-cost problem. Auction Organizers (AOs) are typically paid through fixed-price,
-fiat-denominated contracts, while blockchain execution costs are paid in native
-tokens and may vary sharply under congestion. This paper presents an industry
-case study of a cost-predictable hybrid Web3 architecture for public asset
-auctions. The design combines three elements: deterministic-fee execution,
-compliance-preserving hybridization, and a treasury policy for planned token
-procurement. We instantiate the design on Algorand, where bidder onboarding,
-KYC, fiat deposits, and regulatory coordination remain off-chain, while critical
-auction state transitions are anchored on-chain. Under an asynchronous bid-sniping workload of 50 requests per second over 2{,}500 transactions, the deployed MainNet system maintained a constant per-bid protocol fee of 0.003 ALGO and a median time-to-finality of 7.49\,s (p95 16.70\,s). To assess
+adoption in Business-to-Government (B2G) settings is constrained by a practical cost problem. Auction Organizers (AOs) are typically paid through fixed-price, fiat-denominated contracts, while blockchain execution costs are paid in native tokens and may vary sharply under congestion. This paper presents an industry case study of a Cost-Predictable Web3 Infrastructure (CPWI) for public asset auctions. The design combines three elements: deterministic-fee execution,
+compliance-preserving hybridization, and a treasury policy for planned token procurement. We instantiate the design on Algorand, where bidder onboarding, KYC, fiat deposits, and regulatory coordination remain off-chain, while critical auction state transitions are anchored on-chain. Under an asynchronous bid-sniping workload of 50 requests per second over 2{,}500 transactions, the deployed MainNet system maintained a constant per-bid protocol fee of 0.003 ALGO and a median time-to-finality of 7.49\,s (p95 16.70\,s). To assess
 financial operability under a fixed-price contract, we evaluate a treasury
 policy based on Dollar-Cost Averaging (DCA) and a 50\% reserve through
 a 10{,}000-path Monte Carlo simulation. In the evaluated setting, this pol-
@@ -101,7 +93,7 @@ A persistent barrier to using blockchain in Business-to-Government (B2G) service
 
 This mismatch matters in practice because public auction services are not speculative applications. Auction Organizers (AOs) must satisfy legal requirements on fairness, auditability, bidder processing, and service continuity while operating within procurement-style commercial constraints. If blockchain costs rise unpredictably during congestion or token-market stress, AOs must either absorb margin erosion or include risk premiums that make Web3 deployments commercially unattractive for public-sector adoption.
 
-At the same time, blockchain remains attractive for this domain. Public asset auctions involve strong demands for tamper-evident records, transparent state transitions, and resistance to manipulation in bid logging and ordering. Prior work has shown that hybrid architectures can combine on-chain verifiability with existing institutional and legal processes in public-sector settings \cite{Akaba2020,Baranwal2020,Alqodsi2025}. In our prior work, we reported a legally compliant blockchain-based auction system for tangible state-owned assets in Vietnam deployed on Binance Smart Chain (BSC), which demonstrated the feasibility of hybrid on-chain/off-chain auction operations in a real service context \cite{ref_Le2026DAS}. For auction services, such a design is especially appealing because compliance-sensitive functions can remain off-chain while critical auction events are anchored on-chain.
+At the same time, blockchain remains attractive for this domain. Public asset auctions involve strong demands for tamper-evident records, transparent state transitions, and resistance to manipulation in bid logging and ordering. Prior work has shown that hybrid architectures can combine on-chain verifiability with existing institutional and legal processes in public-sector settings \cite{ref_Akaba2020,ref_Baranwal2020,ref_abdelsalam2025}. In our prior work, we reported a legally compliant blockchain-based auction system for tangible state-owned assets in Vietnam deployed on Binance Smart Chain (BSC), which demonstrated the feasibility of hybrid on-chain/off-chain auction operations in a real service context \cite{ref_Le2026DAS}. For auction services, such a design is especially appealing because compliance-sensitive functions can remain off-chain while critical auction events are anchored on-chain.
 
 This paper addresses that operational gap through an industry case study of a cost-predictable Web3 architecture for public-asset auctions. Rather than treating blockchain cost risk as a secondary engineering concern, we treat it as a first-class deployment requirement alongside compliance, latency, and auditability. Our central design choice is to pair a deterministic-fee execution substrate with a treasury operating policy that helps an AO plan token procurement under a fixed-price B2G contract.
 
@@ -114,7 +106,7 @@ Accordingly, the contribution of this paper is not a new auction theorem or a ne
 The paper makes the following contributions:
 \begin{itemize}
     \item It identifies a practical deployment barrier for blockchain-based B2G auctions: the mismatch between fixed-price fiat service contracts and variable, token-denominated infrastructure costs.
-    \item It distills CPWI into three application-oriented design principles for public auctions: protocol fee isolation, compliance-preserving hybridization, and privacy-preserving auditability.
+    \item It distills Cost-Predictable Web3 Infrastructure (CPWI) into three application-oriented design principles for public auctions: protocol fee isolation, compliance-preserving hybridization, and privacy-preserving auditability.
     \item It presents a concrete hybrid Algorand architecture in which off-chain systems retain legal and operational control, while on-chain logic anchors critical auction state transitions.
     \item It provides operational evidence from a live MainNet stress-tested deployment, showing constant per-bid protocol fees of 0.003 ALGO under an asynchronous bid-sniping workload of 50 RPS, and stable latency with a median TTF of 7.49\,s and p95 of 16.70\,s.
     \item It shows, in a calibrated treasury simulation, that pairing deterministic-fee execution with DCA and a 50\% reserve can materially reduce simulated budget-overrun risk for fixed-price B2G service delivery.
@@ -124,12 +116,12 @@ The remainder of the paper is organized as follows. Section~2 positions the work
 
 \section{Background and Related Work}
 
-Blockchain for public services has been widely motivated by its ability to improve transparency, auditability, and trust in institutional workflows. Prior work on e-procurement and e-government shows that blockchain can support tamper-evident records, privacy-preserving workflows, and stronger accountability when combined with existing administrative processes rather than replacing them outright \cite{ref_Akaba2020,ref_Baranwal2020,ref_SmartProcurement2021,ref_BlockchainPlatform2021,ref_Alqodsi2025}. This literature is important because it establishes that hybrid blockchain deployments can be compatible with public-sector governance requirements.
+Blockchain for public services has been widely motivated by its ability to improve transparency, auditability, and trust in institutional workflows. Prior work on e-procurement and e-government shows that blockchain can support tamper-evident records, privacy-preserving workflows, and stronger accountability when combined with existing administrative processes rather than replacing them outright \cite{ref_Akaba2020,ref_Baranwal2020,ref_abdelsalam2025}. This literature is important because it establishes that hybrid blockchain deployments can be compatible with public-sector governance requirements.
 
 A related body of work studies blockchain-enabled auctions. Existing research has
 explored verifiable auction execution, privacy-preserving bidding,
 decentralized auction logic, and fairness properties across different auction
-formats \cite{ref_Shi2023,ref_DecAuctionSurvey2023}. These studies show that
+formats \cite{ref_Shi2023,ref_chiquito2023}. These studies show that
 blockchain can serve as a credible execution layer for auction services, but
 they generally emphasize mechanism design and protocol structure more than the
 operating economics of a service provider running the system under contract.
@@ -139,9 +131,9 @@ application feasibility in a real auction setting; however, that work did not
 focus on operator-side OPEX predictability, fee volatility, or treasury
 management under fixed-price B2G contracting \cite{ref_Le2026DAS}.
 
-Another relevant stream examines blockchain fee markets, especially on EVM-style networks. Empirical and theoretical studies show that transaction fees remain sensitive to congestion and are difficult to forecast reliably, even when fee-market rules evolve \cite{ref_Liu2022EIP1559,ref_Honeymoon2022,ref_DeepARGas2023}. From an application perspective, the implication is straightforward: variable-fee infrastructures introduce cost volatility precisely where B2G service operators most need predictability.
+Another relevant stream examines blockchain fee markets, especially on EVM-style networks. Empirical and theoretical studies show that transaction fees remain sensitive to congestion and are difficult to forecast reliably, even when fee-market rules evolve \cite{roughgarden2021,reijsbergen2021,liu2022}. From an application perspective, the implication is straightforward: variable-fee infrastructures introduce cost volatility precisely where B2G service operators most need predictability.
 
-Research on crypto-asset volatility and treasury practice adds a further piece of the picture. This literature recognizes that native tokens and reserve assets can be highly volatile and that treasury strategy affects financial exposure \cite{ref_BitcoinVolatility2021,ref_CryptoPortfolio2020,ref_MicroStrategy2025,ref_ReserveAsset2025}. However, it does not directly address the narrower operational setting considered here, where a regulated service operator must bridge fiat-denominated public contracts and token-denominated infrastructure costs over a planning horizon.
+Research on crypto-asset volatility and treasury practice adds a further piece of the picture. This literature recognizes that native tokens and reserve assets can be highly volatile and that treasury strategy affects financial exposure. However, it does not directly address the narrower operational setting considered here, where a regulated service operator must bridge fiat-denominated public contracts and token-denominated infrastructure costs over a planning horizon \cite{shi2025,wen2025,jotaki2024,guennoun2025}.
 
 Taken together, existing work supports the technical case for blockchain in public services, the functional case for blockchain-based auctions, and the financial observation that token and fee volatility are real. What remains underdeveloped is the application-layer question of how to operate a blockchain-based B2G service when the buyer expects fixed pricing, the operator faces volatile execution inputs, and the system must still satisfy latency, compliance, and fairness requirements.
 
@@ -149,7 +141,7 @@ That is the practical gap addressed in this paper. Instead of asking whether blo
 
 Our work therefore differs from prior literature in three ways. First, it centers cost predictability as a deployment requirement rather than a secondary modeling detail. Second, it studies the issue through a concrete public asset auction case rather than through a generic blockchain architecture discussion. Third, it combines system-level evidence from stress testing with an operator-oriented treasury analysis, linking blockchain design choices to service-level and budget-level outcomes that matter in public-sector contracting.
 
-\section{CPWI Design Principles for B2G Auctions}
+\section{Cost-Predictable Web3 Infrastructure (CPWI) Design Principles for B2G Auctions}
 
 CPWI is presented here as a practical set of design principles for operating
 blockchain-based public auctions under fixed-price B2G contracts, rather than as
@@ -334,24 +326,37 @@ Monte Carlo analysis using the evaluated configuration summarized below.
 
 The first evaluation examines whether protocol-level fee determinism remains operationally meaningful under real-world load. In a B2G setting, citing a protocol's theoretical fee structure is insufficient; the AO must demonstrate that the deployed architecture behaves predictably during the bursty, high-contention conditions typical of last-minute bid sniping. To address this, we advanced our evaluation from a controlled TestNet environment to a live Algorand MainNet deployment.
 
-We subjected the on-chain auction contract to a severe asynchronous workload, submitting 2{,}500 asynchronous transaction groups dispatched at 50 RPS at a sustained target rate of 50 requests per second (RPS). Each bid was structured as the fixed transaction group engineered to consume a strictly bounded protocol fee. 
+We subjected the on-chain auction contract to a severe asynchronous workload, submitting 2{,}500 asynchronous transaction groups at a sustained target rate of 50 requests per second (RPS). Each bid was structured as the fixed transaction group engineered to consume a strictly bounded protocol fee. 
 
-The empirical results validate the core CPWI design principle. Across the entire MainNet workload, the execution cost remained consistent at 0.003 ALGO per bid. No mempool-driven fee escalation or dynamic pricing was observed, confirming that the operator's OPEX is successfully decoupled from sudden network congestion. In terms of service latency, the MainNet deployment maintained a median Time-to-Finality (TTF) of 7.49\,s, with a 95th-percentile (p95) latency of 16.70\,s. While naturally higher than localized TestNet benchmarks, this bounded finality window is highly stable and fully compatible with the service-level agreements (SLAs) expected in B2G public asset auctions.
+The empirical results validate the core CPWI design principle. Across the entire MainNet workload, the deployed transaction-group design enforced a fixed configured fee budget of 0.003 ALGO per bid, and no higher fee was required during the benchmark per bid. No mempool-driven fee escalation or dynamic pricing was observed, confirming that the operator's OPEX is successfully decoupled from sudden network congestion. In terms of service latency, the MainNet deployment maintained a median Time-to-Finality (TTF) of 7.49\,s, with a 95th-percentile (p95) latency of 16.70\,s. While naturally higher than localized TestNet benchmarks, this bounded finality window is highly stable and fully compatible with the service-level agreements (SLAs) expected in B2G public asset auctions.
 
-Crucially, the MainNet stress test surfaced a valuable operational insight regarding state contention. Of the 2{,}500 asynchronous bids submitted, 13.00\% were successfully committed to the ledger, while the remaining 87.00\% were rejected. This rejection rate was primarily the intended outcome of the smart contract's deterministic validation logic (state contention), alongside expected node-side rate limiting during the asynchronous burst. During a high-frequency burst, subsequent concurrent transactions attempting to modify the same state naturally failed the strict \texttt{amount > highest\_bid} assertion. 
+Crucially, the MainNet stress test surfaced a valuable operational insight regarding state contention. Of the 2{,}500 asynchronous bids submitted, 13.00\% were successfully committed to the ledger, while the remaining 87.00\% were rejected. This rejection rate was primarily due to state contention during high-frequency bidding, with additional node-side rate limiting observed under the public API endpoint workload. During a high-frequency burst, subsequent concurrent transactions attempting to modify the same state naturally failed the strict \texttt{amount > highest\_bid} assertion. 
 
-From an industry perspective, this is a profound feature of the architecture. It demonstrates that the system rigorously resolves race conditions through strict chronological ordering and immutable contract logic, rather than allowing wealthier participants to buy transaction priority via a variable fee market. For an AO, this guarantees that infrastructure costs remain predictable even when the application layer is flooded with heavily contested, concurrent traffic.
+Crucially, the MainNet stress test surfaced a significant throughput bottleneck at the application layer. Of the 2,500 asynchronous bids submitted, only 13.00\% were successfully committed, while 87.00\% were rejected. This high rejection rate was primarily the intended outcome of the smart contract's deterministic validation logic (state contention), alongside expected node-side rate limiting observed under the public API endpoint workload.
 
-\subsection{Treasury Risk Analysis}
+While this behavior confirms that the smart contract effectively prevents unfair priority—refusing to allow wealthier participants to 'buy' transaction order through variable fees—it poses a substantial challenge for Service Level Agreements (SLAs) in a B2G context. From an operational perspective, a 87.00\% failure rate represents a critical UX bottleneck. This empirical finding suggests that while fee determinism is achieved at the protocol level, direct on-chain bidding on a public ledger has physical limits that require an additional architectural layer to manage high-concurrency auctions without compromising the user experience.
+
+\subsection{Technical Proof-of-Concept: Small-Scale Baseline}
+
+The treasury evaluation utilizes a stylized DCA proxy under annual-horizon budgeting to assess relative risk reduction.
 
 The second evaluation asks whether deterministic fees become economically useful
 when combined with a rule-based treasury policy. We compare a naive
 spot-purchasing baseline with a DCA policy that adds a 50\% strategic reserve.
+To rigorously constrain the source of exchange-rate risk, we first conducted an
+empirical variance analysis across the Token/USD and USD/Local-Fiat (VND) pairs.
+Over a 24-month window (Jan 2024 to May 2026), the annualized variance for 
+ALGO/USD was calculated at 0.88, while the USD/VND variance was negligible at 0.0009. 
+A variance decomposition confirms that the local fiat fluctuation contributes 
+only 0.11\% to the overall ALGO OPEX variance (and similarly 0.33\% for BNB/USD 
+with a variance of 0.29). This statistically negligible fiat variance allows the 
+OPEX model to safely assume zero local-fiat volatility, isolating crypto-asset 
+price dynamics as the primary financial risk factor.
+
 The analysis uses a 10{,}000-iteration Monte Carlo simulation over an annual
 planning horizon. Token price dynamics are modeled as Geometric Brownian
-Motion, with parameters calibrated by maximum likelihood from 24 months of
-daily returns from January 2024 to May 2026. The annualized volatility input is $\sigma_{\text{ALGO}}=0.60$, calibrated from
-24 months of daily returns from January 2024 to May 2026, and drift is set to
+Motion, with parameters calibrated by maximum likelihood. The annualized volatility
+input is set to $\sigma_{\text{ALGO}}=0.60$, and drift is set to
 zero as a conservative budgeting assumption. The baseline deployment assumes
 50{,}000 bids per fiscal year, an initial ALGO price of \$0.12, and an empirically verified deterministic
 per-bid protocol cost of 0.003 ALGO, yielding a nominal annual token budget
@@ -423,6 +428,30 @@ simulation code, parameter settings, and scripts used to generate the reported
 treasury-risk results are available in the project repository.\footnote{\url{https://github.com/tuanle-max/CPWI-B2G-OPEX-Simulation}}
 
 
+
+\subsection{Economic Scalability and Industrial Thresholds}
+While the 50,000-bid baseline successfully demonstrates the relative risk reduction of the DCA policy, its nominal OPEX (\$18.00) is too small to justify the administrative overhead of a complex treasury operation. To evaluate the practical business value of the CPWI architecture for large-scale Auction Organizers (AOs), we conducted a scenario analysis scaling the operational volume to regional (500,000 bids) and national (5,000,000 bids) levels.
+
+\begin{table}[hbt!]
+\centering
+\caption{Treasury OPEX Risk Analysis Across Operational Scales (Base Price: \$0.12, Fee: 0.003 ALGO)}
+\label{tab:scenario_analysis}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Scale (Bids/Year)} & \textbf{Nominal OPEX} & \textbf{99\% Spot VaR} & \textbf{99\% DCA VaR} & \textbf{Absolute Risk Reduction} \\ \hline
+Small (50,000) & \$18.00 & \$42.66 & \$10.66 & \$31.99 \\ \hline
+Regional (500,000) & \$180.00 & \$426.59 & \$106.65 & \$319.94 \\ \hline
+National (5,000,000) & \$1,800.00 & \$4,265.91 & \$1,066.48 & \$3,199.43 \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+As shown in Table \ref{tab:scenario_analysis}, while the relative overrun probability remains invariant due to the proportional nature of geometric Brownian motion, the absolute monetary value protected by the treasury policy scales significantly. At a national scale of 5 million bids per year, the baseline OPEX increases to \$1,800.00. Under severe market stress (99\% VaR), an unhedged spot-purchasing strategy exposes the AO to potential losses exceeding \$4,265.91. Implementing the DCA and 50\% reserve policy compresses this extreme tail risk to \$1,066.48, yielding an absolute risk reduction of \$3,199.43. 
+
+Furthermore, if the protocol fee structure incorporates additional on-chain compliance operations (e.g., ASA minting, final asset transfers, or document hashing), this baseline OPEX---and the corresponding absolute savings---would multiply. These results confirm that while fee determinism is a technical prerequisite, the CPWI treasury model delivers its primary industrial value in high-volume, national-scale deployments where absolute financial exposure is substantial enough to warrant treasury management.
+
+
 \section{Operational Implications for Auction Organizers}
 
 The results of this case study matter to Auction Organizers in operational terms,
@@ -474,10 +503,9 @@ service can be contracted and operated in a credible way.
 
 \section{Limitations}
 
-This paper should be read as a case study rather than as a universal claim about
-blockchain-based B2G systems. The empirical evidence is limited to the observed workload on Algorand MainNet. The stress test therefore shows that the
-proposed design can behave predictably under controlled adversarial load, but it
-represents a synthetic stress test rather than long-term organic usage.
+This paper should be read as a case study rather than as a universal claim about blockchain-based B2G systems. The empirical evidence is limited to the observed workload on Algorand MainNet. While the stress test demonstrates consistent fee behavior, the 87.00\% rejection rate indicates that direct on-chain submission is inherently unsuitable for high-concurrency public auctions without a mediation layer. This represents a significant technical limitation of a purely on-chain bidding approach.
+
+Furthermore, to achieve production-grade reliability and satisfy B2G SLAs, future iterations of the CPWI architecture must incorporate an off-chain sequencing or queuing mechanism. Such a layer would pre-validate and order bids before batching them for on-chain settlement, effectively shielding end-users from protocol-level contention while maintaining the deterministic cost structure and auditability provided by the underlying blockchain. Finally, the current empirical artifact focuses on the bidding core, omitting the final asset transfer (ASA) path, which should be evaluated in integrated end-to-end studies.
 
 The financial analysis is also bounded by its assumptions. The treasury results
 are based on a 10{,}000-path Monte Carlo simulation calibrated on historical ALGO price dynamics from January 2024 to May 2026, with zero drift, a
@@ -569,15 +597,6 @@ Company X and owns stock in Company Y. Author C is a member of committee Z.
 %
 \begin{thebibliography}{8}
 
-\bibitem{ref_Le2026DAS}
-Le, M.T., Nguyen, X.H., Tran, Q.H., Pham, D.K., Do, T.H.:
-Decentralized Auction System for Tangible Assets and Its Application.
-In: Kő, A., Buccafurri, F., Kotsis, G., Tjoa, A.M., Khalil, I. (eds)
-Electronic Government and the Information Systems Perspective. EGOVIS 2025.
-Lecture Notes in Computer Science, vol. 16049, Springer, Cham (2026).
-\url{https://doi.org/10.1007/978-3-032-02225-7_14}
-
-
 % ---------- Cluster 1: Blockchain for public procurement / e-government ----------
 
 \bibitem{ref_Akaba2020}
@@ -597,6 +616,83 @@ Blockchain -- ICBC 2020.
 Lecture Notes in Computer Science, vol. 12404.
 Springer, Cham (2020).
 \url{https://doi.org/10.1007/978-3-030-59638-5_1}
+
+\bibitem{ref_abdelsalam2025}
+Abdelsalam, M., Abouahmed, A., Shatat, A., Hashish, A., and AlQodsi, E.:
+Blockchain and Smart Public Procurement Contracts: A Comparative Legal Analysis of Digital Transformation in the Public Sector.
+Access to Justice in Eastern Europe, 8(4), 242--274 (2025).
+\url{https://doi.org/10.33327/AJEE-18-8.4-a000137}
+
+\bibitem{ref_Le2026DAS}
+Le, M.T., Nguyen, X.H., Tran, Q.H., Pham, D.K., Do, T.H.:
+Decentralized Auction System for Tangible Assets and Its Application.
+In: Kő, A., Buccafurri, F., Kotsis, G., Tjoa, A.M., Khalil, I. (eds)
+Electronic Government and the Information Systems Perspective. EGOVIS 2025.
+Lecture Notes in Computer Science, vol. 16049, Springer, Cham (2026).
+\url{https://doi.org/10.1007/978-3-032-02225-7_14}
+
+\bibitem{ref_Shi2023}
+Shi, Z., de Laat, C., Grosso, P., and Zhao, Z.:
+Integration of Blockchain and Auction Models: A Survey, Some Applications, and Challenges.
+IEEE Communications Surveys \& Tutorials, 25(1), 497--537 (2023).
+\url{https://doi.org/10.1109/COMST.2022.3222403}
+
+\bibitem{ref_chiquito2023}
+Chiquito, E., Bodin, U., and Schelén, O.:
+Survey on Decentralized Auctioning Systems.
+IEEE Access, 11, 51672--51688 (2023).
+\url{https://doi.org/10.1109/ACCESS.2023.3279914}
+
+\bibitem{roughgarden2021}
+Roughgarden, T.:
+Transaction Fee Mechanism Design.
+In: Proceedings of the 22nd ACM Conference on Economics and Computation (EC '21),
+p. 792. Association for Computing Machinery, New York, NY, USA (2021).
+\url{doi:10.1145/3465456.3467591}
+
+\bibitem{reijsbergen2021}
+Reijsbergen, D., Sridhar, S., Monnot, B., Leonardos, S., Skoulakis, S., and Piliouras, G.:
+Transaction Fees on a Honeymoon: Ethereum's EIP-1559 One Month Later.
+In: 2021 IEEE International Conference on Blockchain (Blockchain),
+pp. 196--204 (2021).
+\url{doi:10.1109/Blockchain53845.2021.00034}
+
+\bibitem{liu2022}
+Liu, Y., Lu, Y., Nayak, K., Zhang, F., Zhang, L., and Zhao, Y.:
+Empirical Analysis of EIP-1559: Transaction Fees, Waiting Times, and Consensus Security.
+In: Proceedings of the 2022 ACM SIGSAC Conference on Computer and Communications Security (CCS '22),
+pp. 2099--2113. Association for Computing Machinery, New York, NY, USA (2022).
+\url{doi:10.1145/3548606.3559341}
+
+\bibitem{shi2025}
+Shi, X.:
+The Role of Crypto Assets in the Traditional Banking System and Its Impact on Financial Stability.
+Advances in Economics, Management and Political Sciences, 165, 121--127 (2025).
+\url{doi:10.54254/2754-1169/2025.21598}
+
+
+\bibitem{wen2025}
+Wen, H.:
+How Digital Asset Treasury Companies Can Survive Bear Markets: The Case of the Strategy and Bitcoin.
+In: Proceedings (2025).
+doi: [link unavailable, see \url{https://api.semanticscholar.org/CorpusID:282738509]}
+
+\bibitem{jotaki2024}
+Jotaki, H., Liu, M., and Takahashi, H.:
+A Study of the Impact of Crypto Assets on Portfolio Risk Management (2019--2022).
+Journal of Interdisciplinary Economics, 0(0) (2024).
+\url{https://doi.org/10.1177/02601079241264878}
+
+\bibitem{guennoun2025}
+Guennoun, A., and Guennoun, R.:
+MicroStrategy and Bitcoin: Reshaping the Business Environment.
+ANCIENT LAND (2025).
+Available at: \url{https://api.semanticscholar.org/CorpusID:278100075}
+
+
+
+
+
 
 \bibitem{ref_Mouratidis2021}
 Prototyping a Smart Contract Based Public Procurement to Fight Corruption.
@@ -633,12 +729,6 @@ Blockchain Technology as an Infrastructure: A Review.
 International Journal of Engineering Applied Sciences and Technology 6(9), 285--288 (2021).
 \url{https://www.ijeast.com/papers/285-288,Tesma606,IJEAST.pdf}
 
-\bibitem{ref_Alqodsi2025}
-Alqodsi, E.:
-Blockchain and Smart Public Procurement Contracts: A Comparative Legal Analysis of Digital Transformation in the Public Sector.
-Access to Justice in Eastern Europe 8(4), 242--274 (2025).
-\url{https://doi.org/10.33327/AJEE-18-8.4-a000137}
-
 \bibitem{ref_PolicyFintechProc2021}
 Some Policy Issues Surrounding the Use of FinTech in Public Procurements.
 Public Procurement Law Review 30(4), 167--182 (2021).
@@ -646,16 +736,6 @@ Public Procurement Law Review 30(4), 167--182 (2021).
 
 % ---------- Cluster 2: Blockchain + auction systems ----------
 
-\bibitem{ref_Shi2023}
-Shi, Z., de Laat, C., Grosso, P., Zhao, Z.:
-Integration of Blockchain and Auction Models: A Survey, Some Applications, and Challenges.
-IEEE Communications Surveys \& Tutorials 25(1), 497--537 (2023).
-\url{https://doi.org/10.1109/COMST.2022.3222403}
-
-\bibitem{ref_DecAuctionSurvey2023}
-Survey on Decentralized Auctioning Systems.
-IEEE publication (2023).
-\url{https://ieeexplore.ieee.org/document/10135103/}
 
 \bibitem{ref_NFTAuction2023}
 Comprehensive Analysis of the Trade of NFTs at Major Auction Houses: From Hype to Reality.

@@ -128,11 +128,11 @@ async def send_and_wait(session, url, token, txid, raw_bytes, expected_fee, sema
                         data = await resp.json()
                         if data.get("confirmed-round", 0) > 0:
                             ttf = time.time() - start_time
-                            actual_fee = 3000 # Cố định phí của group (1 Pay, 1 AppCall, 1 Inner)
-                            results.append({"txid": txid, "ttf": ttf, "fee": actual_fee, "status": "success", "error": None})
+                            configured_fee_budget = 3000 # Cố định phí của group (1 Pay, 1 AppCall, 1 Inner)
+                            results.append({"txid": txid, "ttf": ttf, "fee": configured_fee_budget, "status": "success", "error": None})
                             
                             # CIRCUIT BREAKER: Kiểm tra phí
-                            algo_fee = actual_fee / 1_000_000
+                            algo_fee = configured_fee_budget / 1_000_000
                             # Lưu ý: Vì có 1 Inner Txn, fee tối thiểu cho Group này là 0.003 ALGO.
                             if algo_fee > 0.003: 
                                 print(f"\n[CIRCUIT BREAKER] CẢNH BÁO: Phí giao dịch vượt quá giới hạn ({algo_fee} ALGO) cho TXID {txid}. Dừng hệ thống khẩn cấp!")
