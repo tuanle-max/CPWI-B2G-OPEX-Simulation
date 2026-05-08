@@ -1,0 +1,25 @@
+========================================
+ BÁO CÁO TỔNG HỢP STRESS-TEST MAINNET
+========================================
+
+1. THÔNG TIN CHUNG
+------------------
+- Tổng số giao dịch đã gửi: 2500
+- Số giao dịch thành công : 708 (28.32%)
+- Số giao dịch thất bại   : 1792 (71.68%)
+  (Lý do thất bại chính: Trùng đột logic 'amount > highest_bid' do thực thi song song bất đồng bộ, hoặc quá tải Rate Limit từ Node).
+
+2. TỐC ĐỘ VÀ LƯU LƯỢNG
+----------------------
+- Tốc độ phát lệnh (Actual RPS): ~50.00 req/s
+  (Do thiết lập Target RPS = 50 và độ trễ mạng thực tế)
+
+3. HIỆU NĂNG XÁC NHẬN (TIME-TO-FINALITY)
+----------------------------------------
+- Độ trễ trung vị (Median TTF)  : 6.11 giây
+- Độ trễ bách phân vị 95 (P95)  : 10.75 giây
+
+4. CHI PHÍ (PROTOCOL FEE)
+-------------------------
+- Phí cao nhất bị trừ (Max Fee) : 0.002 ALGO
+  (Hệ thống Circuit Breaker bảo vệ ngưỡng 0.003 ALGO hoạt động an toàn).
