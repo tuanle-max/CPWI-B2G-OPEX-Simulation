@@ -79,8 +79,8 @@ financial operability under a fixed-price contract, we evaluate a treasury
 policy based on Dollar-Cost Averaging (DCA) and a 50\% reserve through
 a 10{,}000-path Monte Carlo simulation. In the evaluated setting, this pol-
 icy reduces the simulated probability of cost overruns above 20\% from
-27.18\% to 10.03\%, while reducing Monetary OPEX VaR from \$22.29 to
-\$5.57 at 95\% confidence and from \$42.66 to \$10.66 at 99\% confidence. The case suggests that cost predictability is a practical design
+25.23\% to 13.75\%, while reducing Monetary OPEX VaR from \$36.18 to
+\$9.05 at 95\% confidence and from \$84.84 to \$21.21 at 99\% confidence. The case suggests that cost predictability is a practical design
 requirement for blockchain-based B2G services, not a secondary implementation
 detail.
 \end{abstract}
@@ -161,13 +161,10 @@ layer. CPWI therefore favors execution environments in which identical
 operations incur identical protocol fees within the planning horizon relevant to
 service contracting and treasury management.
 
-This principle can be expressed analytically with minimal machinery. Let
-$N_{\text{bids}}$ denote the number of bids in an auction session, $N_{\text{inner}}$
-the number of inner transactions required per bid, $F_{\text{tx}}$ the protocol fee per
-transaction, and $E_{T/F}(t)$ the token-to-fiat exchange rate at time $t$. On a
+This principle can be expressed analytically with minimal machinery. Let $N_{\text{bids}}$ denote the number of bids in an auction session, $N_{\text{outer}}$ the number of outer transactions, $N_{\text{inner}}$ the number of inner transactions required per bid, $F_{\text{tx}}$ the protocol fee per transaction, and $E_{T/F}(t)$ the token-to-fiat exchange rate at time $t$. On a
 deterministic-fee substrate, session cost becomes
 \begin{equation}
-C_{\text{fixed}}(t) = N_{\text{bids}}(1 + N_{\text{inner}})F_{\text{tx}}E_{T/F}(t).
+C_{\text{fixed}}(t) = N_{\text{bids}}(N_{\text{outer}} + N_{\text{inner}})F_{\text{tx}}E_{T/F}(t).
 \end{equation}
 By contrast, on a variable-fee chain the corresponding cost depends on the gas
 market,
@@ -202,8 +199,8 @@ procurement practice.
 Public auctions require transparency, but they do not justify public disclosure of
 personally identifiable information. CPWI therefore treats auditability and
 privacy as joint requirements. The system should make critical state changes
-publicly verifiable---such as bid submission order, auction closure, and asset
-transfer---while ensuring that bidder identities, KYC records, and fiat-payment
+publicly verifiable - such as bid submission order, auction closure, and asset
+transfer - while ensuring that bidder identities, KYC records, and fiat-payment
 details remain in compliant off-chain systems.
 
 Operationally, this means that assets, bidders, and auction events are represented
@@ -267,7 +264,7 @@ been authorized through prior off-chain checks. If these conditions are satisfie
 the contract updates the global application state to record the new highest bid
 and current leading bidder.
 
-A key design choice is that each bid is realized as a fixed-size transaction group. While our initial theoretical model assumed a simple grouping of two outer transactions (PaymentTxn and ApplicationCallTxn) and one inner transaction. empirical MainNet deployment revealed a critical architectural requirement: to safely fund the smart contract and execute the bid simultaneously, the outer group must contain both a \texttt{PaymentTxn} and an \texttt{AppCallTxn}. Combined with the \texttt{InnerTxn} (required to refund the previous highest bidder), the actual per-bid execution necessitates exactly three transactions.
+A key design choice is that each bid is realized as a fixed-size transaction group. While our initial theoretical model assumed a simple grouping of two outer transactions (PaymentTxn and ApplicationCallTxn) and one inner transaction, empirical MainNet deployment revealed a critical architectural requirement: to safely fund the smart contract and execute the bid simultaneously, the outer group must contain both a \texttt{PaymentTxn} and an \texttt{AppCallTxn}. Combined with the \texttt{InnerTxn} (required to refund the previous highest bidder), the actual per-bid execution necessitates exactly three transactions.
 
 With $N_{\text{outer}} = 2$, $N_{\text{inner}} = 1$, and the protocol minimum fee $F_{\text{tx}} = 0.001$ ALGO per transaction, the per-bid protocol fee is precisely bounded:
 \begin{equation}
@@ -328,9 +325,7 @@ The first evaluation examines whether protocol-level fee determinism remains ope
 
 We subjected the on-chain auction contract to a severe asynchronous workload, submitting 2{,}500 asynchronous transaction groups at a sustained target rate of 50 requests per second (RPS). Each bid was structured as the fixed transaction group engineered to consume a strictly bounded protocol fee. 
 
-The empirical results validate the core CPWI design principle. Across the entire MainNet workload, the deployed transaction-group design enforced a fixed configured fee budget of 0.003 ALGO per bid, and no higher fee was required during the benchmark per bid. No mempool-driven fee escalation or dynamic pricing was observed, confirming that the operator's OPEX is successfully decoupled from sudden network congestion. In terms of service latency, the MainNet deployment maintained a median Time-to-Finality (TTF) of 7.49\,s, with a 95th-percentile (p95) latency of 16.70\,s. While naturally higher than localized TestNet benchmarks, this bounded finality window is highly stable and fully compatible with the service-level agreements (SLAs) expected in B2G public asset auctions.
-
-Crucially, the MainNet stress test surfaced a valuable operational insight regarding state contention. Of the 2{,}500 asynchronous bids submitted, 13.00\% were successfully committed to the ledger, while the remaining 87.00\% were rejected. This rejection rate was primarily due to state contention during high-frequency bidding, with additional node-side rate limiting observed under the public API endpoint workload. During a high-frequency burst, subsequent concurrent transactions attempting to modify the same state naturally failed the strict \texttt{amount > highest\_bid} assertion. 
+The empirical results validate the core CPWI design principle. Across the entire MainNet workload, the deployed transaction-group design enforced a fixed configured fee budget of 0.003 ALGO per bid, and no higher fee was required during the benchmark. No mempool-driven fee escalation or dynamic pricing was observed, confirming that the operator's OPEX is successfully decoupled from sudden network congestion. In terms of service latency, the MainNet deployment maintained a median Time-to-Finality (TTF) of 7.49\,s, with a 95th-percentile (p95) latency of 16.70\,s. While naturally higher than localized TestNet benchmarks, this bounded finality window is highly stable and fully compatible with the service-level agreements (SLAs) expected in B2G public asset auctions.
 
 Crucially, the MainNet stress test surfaced a significant throughput bottleneck at the application layer. Of the 2,500 asynchronous bids submitted, only 13.00\% were successfully committed, while 87.00\% were rejected. This high rejection rate was primarily the intended outcome of the smart contract's deterministic validation logic (state contention), alongside expected node-side rate limiting observed under the public API endpoint workload.
 
@@ -338,25 +333,22 @@ While this behavior confirms that the smart contract effectively prevents unfair
 
 \subsection{Technical Proof-of-Concept: Small-Scale Baseline}
 
-The treasury evaluation utilizes a stylized DCA proxy under annual-horizon budgeting to assess relative risk reduction.
-
 The second evaluation asks whether deterministic fees become economically useful
 when combined with a rule-based treasury policy. We compare a naive
 spot-purchasing baseline with a DCA policy that adds a 50\% strategic reserve.
 To rigorously constrain the source of exchange-rate risk, we first conducted an
 empirical variance analysis across the Token/USD and USD/Local-Fiat (VND) pairs.
-Over a 24-month window (Jan 2024 to May 2026), the annualized variance for 
+Over a 29-month window (Jan 2024 to May 2026), the annualized variance for 
 ALGO/USD was calculated at 0.88, while the USD/VND variance was negligible at 0.0009. 
 A variance decomposition confirms that the local fiat fluctuation contributes 
-only 0.11\% to the overall ALGO OPEX variance (and similarly 0.33\% for BNB/USD 
-with a variance of 0.29). This statistically negligible fiat variance allows the 
+only 0.11\% to the overall ALGO OPEX variance. This statistically negligible fiat variance allows the 
 OPEX model to safely assume zero local-fiat volatility, isolating crypto-asset 
 price dynamics as the primary financial risk factor.
 
 The analysis uses a 10{,}000-iteration Monte Carlo simulation over an annual
 planning horizon. Token price dynamics are modeled as Geometric Brownian
 Motion, with parameters calibrated by maximum likelihood. The annualized volatility
-input is set to $\sigma_{\text{ALGO}}=0.60$, and drift is set to
+input is set to $\sigma_{\text{ALGO}}=0.94 (derived from the empirical variance of 0.88)$, and drift is set to
 zero as a conservative budgeting assumption. The baseline deployment assumes
 50{,}000 bids per fiscal year, an initial ALGO price of \$0.12, and an empirically verified deterministic
 per-bid protocol cost of 0.003 ALGO, yielding a nominal annual token budget
@@ -385,9 +377,9 @@ Random seed & 42 \\
 
 The results show a substantial improvement in budget stability under the
 proposed treasury policy. For the spot-purchasing baseline, the simulated
-probability that cost overruns exceed 20\% is 27.18\%. Under the DCA policy
-with a 50\% reserve and Net OPEX accounting, that probability falls to 10.03\%.
-Tail risk contracts even more sharply. Adjusted for the empirical 0.003 ALGO per-bid fee structure, the 95\% Monetary OPEX VaR declines from \$22.29 under the spot baseline to \$5.57 under the reserved policy. Similarly, the 99\% Monetary OPEX VaR declines from \$42.66 to \$10.66. It is worth noting that while the absolute Monetary VaR scales with the adjusted protocol fee, the relative overrun probabilities remain invariant, demonstrating the robustness of the DCA policy across different base-cost assumptions.
+probability that cost overruns exceed 20\% is 25.23\%. Under the DCA policy
+with a 50\% reserve and Net OPEX accounting, that probability falls to 13.75\%.
+Tail risk contracts even more sharply. Adjusted for the empirical 0.003 ALGO per-bid fee structure, the 95\% Monetary OPEX VaR declines from \$36.18 under the spot baseline to \$9.05 under the reserved policy. Similarly, the 99\% Monetary OPEX VaR declines from \$84.84 to \$21.21. It is worth noting that while the absolute Monetary VaR scales with the adjusted protocol fee, the relative overrun probabilities remain invariant, demonstrating the robustness of the DCA policy across different base-cost assumptions.
 
 These reductions are best read as evidence of operational viability rather than
 as financial optimization in the abstract. Once the fee component is fixed at the
@@ -440,14 +432,14 @@ While the 50,000-bid baseline successfully demonstrates the relative risk reduct
 \begin{tabular}{|l|c|c|c|c|}
 \hline
 \textbf{Scale (Bids/Year)} & \textbf{Nominal OPEX} & \textbf{99\% Spot VaR} & \textbf{99\% DCA VaR} & \textbf{Absolute Risk Reduction} \\ \hline
-Small (50,000) & \$18.00 & \$42.66 & \$10.66 & \$31.99 \\ \hline
-Regional (500,000) & \$180.00 & \$426.59 & \$106.65 & \$319.94 \\ \hline
-National (5,000,000) & \$1,800.00 & \$4,265.91 & \$1,066.48 & \$3,199.43 \\ \hline
+Small (50,000) & \$18.00 & \$84.84 & \$21.21 & \$63.63 \\ \hline
+Regional (500,000) & \$180.00 & \$848.45 & \$212.11 & \$636.34 \\ \hline
+National (5,000,000) & \$1,800.00 & \$8,484.47 & \$2,121.12 & \$6,363.35 \\ \hline
 \end{tabular}%
 }
 \end{table}
 
-As shown in Table \ref{tab:scenario_analysis}, while the relative overrun probability remains invariant due to the proportional nature of geometric Brownian motion, the absolute monetary value protected by the treasury policy scales significantly. At a national scale of 5 million bids per year, the baseline OPEX increases to \$1,800.00. Under severe market stress (99\% VaR), an unhedged spot-purchasing strategy exposes the AO to potential losses exceeding \$4,265.91. Implementing the DCA and 50\% reserve policy compresses this extreme tail risk to \$1,066.48, yielding an absolute risk reduction of \$3,199.43. 
+As shown in Table \ref{tab:scenario_analysis}, while the relative overrun probability remains invariant due to the proportional nature of geometric Brownian motion, the absolute monetary value protected by the treasury policy scales significantly. At a national scale of 5 million bids per year, the baseline OPEX increases to \$1,800.00. Under severe market stress (99\% VaR), an unhedged spot-purchasing strategy exposes the AO to potential losses exceeding \$8,484.47. Implementing the DCA and 50\% reserve policy compresses this extreme tail risk to \$2,121.12, yielding an absolute risk reduction of \$6,363.35. 
 
 Furthermore, if the protocol fee structure incorporates additional on-chain compliance operations (e.g., ASA minting, final asset transfers, or document hashing), this baseline OPEX---and the corresponding absolute savings---would multiply. These results confirm that while fee determinism is a technical prerequisite, the CPWI treasury model delivers its primary industrial value in high-volume, national-scale deployments where absolute financial exposure is substantial enough to warrant treasury management.
 
@@ -551,9 +543,9 @@ In the evaluated Algorand MainNet case, the architecture maintained a constant p
 protocol fee of 0.003 ALGO under an asynchronous bid-sniping workload of 50 RPS over
 2{,}500 transactions, while sustaining a median TTF of 7.49\,s and p95 latency of
 16.70\,s. In the corresponding treasury analysis, a DCA policy with a 50\% reserve reduced
-the simulated probability of cost overruns above 20\% from 27.18\% to 10.03\%,
-and consistently reduced Monetary OPEX VaR from \$22.29 to \$5.57 at 95\% confidence
-and from \$42.66 to \$10.66 at 99\% confidence. These results do not
+the simulated probability of cost overruns above 20\% from 25.23\% to 13.75\%,
+and consistently reduced Monetary OPEX VaR from \$36.18 to \$9.05 at 95\% confidence
+and from \$84.84 to \$21.21 at 99\% confidence. These results do not
 prove that one architecture solves all B2G blockchain cost problems. They do,
 however, show that fee predictability and treasury planning can materially improve
 the operational fit between blockchain infrastructure and fixed-price public
@@ -568,9 +560,9 @@ also by whether their cost structure is compatible with the way such services ar
 actually contracted and operated.
 
 
-\begin{credits}
-\subsubsection{\ackname} This study was partly funded by the Lac Viet Auction Partnership Company and KOET Co., Ltd.
-\end{credits}
+%\begin{credits}
+%\subsubsection{\ackname} This study was partly funded by the Lac Viet Auction Partnership Company and KOET Co., Ltd.
+%\end{credits}
 
 \begin{comment}
 \subsubsection{\discintname}
@@ -688,141 +680,6 @@ Guennoun, A., and Guennoun, R.:
 MicroStrategy and Bitcoin: Reshaping the Business Environment.
 ANCIENT LAND (2025).
 Available at: \url{https://api.semanticscholar.org/CorpusID:278100075}
-
-
-
-
-
-
-\bibitem{ref_Mouratidis2021}
-Prototyping a Smart Contract Based Public Procurement to Fight Corruption.
-Computers 10(7), 85 (2021).
-\url{https://www.mdpi.com/2073-431X/10/7/85}
-
-\bibitem{ref_BCPlatformEProc2021}
-A Blockchain-Based Platform for the e-Procurement Management in the Public Sector.
-In: Lecture Notes in Computer Science, pp. 255--270 (2021).
-\url{https://doi.org/10.1007/978-3-030-78428-7_17}
-
-\bibitem{ref_BCProcCorruption2021}
-Blockchain Technology as a Panacea for Procurement Corruption in Digital Era.
-International Journal of Research in Business and Social Science 10(4), 137--149 (2021).
-\url{https://www.ssbfnet.com/ojs/index.php/ijrbs/article/view/1222}
-
-\bibitem{ref_LegalSmartContracts2021}
-Legal Framework of Using Smart-Contracts in the Public Procurement System.
-The American Journal of Political Science Law and Criminology 3(6), 69--77 (2021).
-\url{https://theamericanjournals.com/index.php/tajpslc/article/view/624}
-
-\bibitem{ref_Li2020}
-BlockChain/ABE-based Fusion Solution for E-government Data Sharing and Privacy Protection (GovChain).
-In: Proc. ACM/IEEE conference on information security (2020).
-\url{https://dl.acm.org/doi/10.1145/3443467.3443764}
-
-\bibitem{ref_Ferrag2020}
-Consortium Blockchain for Security and Privacy-Preserving in E-Government Systems.
-In: Proc. 2020 IEEE conference on e-Government (2020).
-\url{https://www.semanticscholar.org/paper/e717a22537d156dd08107204e8230ecfbfa64c57}
-
-\bibitem{ref_BCInfraReview2021}
-Blockchain Technology as an Infrastructure: A Review.
-International Journal of Engineering Applied Sciences and Technology 6(9), 285--288 (2021).
-\url{https://www.ijeast.com/papers/285-288,Tesma606,IJEAST.pdf}
-
-\bibitem{ref_PolicyFintechProc2021}
-Some Policy Issues Surrounding the Use of FinTech in Public Procurements.
-Public Procurement Law Review 30(4), 167--182 (2021).
-\url{https://doi.org/10.1080/17521440.2022.2063605}
-
-% ---------- Cluster 2: Blockchain + auction systems ----------
-
-
-\bibitem{ref_NFTAuction2023}
-Comprehensive Analysis of the Trade of NFTs at Major Auction Houses: From Hype to Reality.
-Arts 12(5), 212 (2023).
-\url{https://www.mdpi.com/2076-0752/12/5/212}
-
-% ---------- Cluster 3: Fee markets, gas volatility, transaction-fee mechanisms ----------
-
-\bibitem{ref_Liu2022}
-Liu, Y., Lu, Y., Nayak, K., Zhang, F., Zhang, L., Zhao, Y.:
-Empirical Analysis of EIP-1559: Transaction Fees, Waiting Times, and Consensus Security.
-In: Proc. 2022 ACM SIGSAC Conf. on Computer and Communications Security (CCS'22), pp. 2099--2113.
-ACM, New York (2022).
-\url{https://doi.org/10.1145/3548606.3559341}
-
-\bibitem{ref_Aoyagi2022}
-Transaction Fees on a Honeymoon: Ethereum's EIP-1559 One Month Later.
-arXiv preprint arXiv:2110.04753 (2022).
-\url{https://arxiv.org/abs/2110.04753}
-
-\bibitem{ref_Han2023}
-Prediction of Ethereum Gas Prices using DeepAR and Probabilistic Forecasting.
-International Journal of Forecasting (2023).
-\url{https://doi.org/10.1016/j.ijforecast.2023.08.004}
-
-\bibitem{ref_EIP1559NthPrice2024}
-A Treatment of EIP-1559: Enhancing Transaction Fee Mechanism through Nth-Price Auction.
-arXiv preprint arXiv:2406.18957 (2024).
-\url{https://arxiv.org/abs/2406.18957}
-
-\bibitem{ref_OptimalityFeeMarkets2022}
-Optimality Despite Chaos in Fee Markets.
-arXiv preprint arXiv:2212.07175 (2022).
-\url{https://arxiv.org/abs/2212.07175}
-
-% ---------- Cluster 4: Crypto assets, treasury, hedging / risk management ----------
-
-\bibitem{ref_VolSurpriseBTC2021}
-A Critical Analysis of Volatility Surprise in Bitcoin Cryptocurrency and Other Financial Assets.
-Risks 9(11), 207 (2021).
-\url{https://www.mdpi.com/2227-9091/9/11/207}
-
-\bibitem{ref_PortfolioCryptoCOVID2020}
-Portfolio Effects of Cryptocurrencies during the COVID-19 Crisis.
-In: Portfolio Effects of Cryptocurrencies during the Covid-19 Crisis, pp. 89--115.
-Edizioni Ca' Foscari, Venice (2020).
-\url{https://edizionicafoscari.unive.it/libri/978-88-6969-443-1/portfolio-effects-of-cryptocurrencies-during-the-c/}
-
-\bibitem{ref_MicroStrategy2025}
-MicroStrategy and Bitcoin: Reshaping the Business Environment.
-Azerbaijan Economic Review 7(3), 52--64 (2025).
-\url{https://aem.az/uploads/posts/2025/04/QD%207.3%20iclik-52-64.pdf}
-
-\bibitem{ref_BitcoinReserveAsset2025}
-Bitcoin as a Potential Reserve Asset: Advantages and Limitations.
-Business Navigator 81, 210--221 (2025).
-\url{http://business-navigator.ks.ua/journals/2025/81_2025/24.pdf}
-
-\bibitem{ref_PublicCryptoReserves2025}
-Prospects for the Legal Regulation of the Formation and Use of Public Cryptocurrency Reserve Funds.
-Lex Russica 78(11), 73--90 (2025).
-\url{https://lexrussica.msal.ru/jour/article/view/4814}
-
-\bibitem{ref_CryptoRiskReview2025}
-A Critical Investigation of Cryptocurrency: A Comprehensive Review.
-Open Journal of Business and Management 13(2), 115--132 (2025).
-\url{https://jconsortium.com/index.php/opjubr/article/view/853}
-
-\bibitem{ref_DeFiNaturalResources2022}
-The Impact of Digital Finance on the Natural Resource Market: Evidence from DeFi, Oil, and Gold.
-Resources Policy 79, 103--122 (2022).
-\url{https://doi.org/10.1016/j.resourpol.2022.103122}
-
-\bibitem{ref_ToxicLiquidation2022}
-Toxic Liquidation Spirals.
-arXiv preprint arXiv:2212.07306v2 (2022).
-\url{https://doi.org/10.48550/arXiv.2212.07306}
-
-\bibitem{ref_ERC4337}
-V. Buterin, Y. Weiss, D. Tirosh, S. Nacson, A. Forshtat, K. Gazso, and T. Hess.
-\textit{ERC-4337: Account Abstraction Using Alt Mempool}.
-Ethereum Improvement Proposal, no. 4337, 2021.
-Available at: \url{https://eips.ethereum.org/EIPS/eip-4337}.
-
-\bibitem{ref_AlgorandDev}
-Algorand Foundation: Transaction Fees. Algorand Developer Documentation (2024).
-\url{https://dev.algorand.co/concepts/transactions/fees/}
 
 \end{thebibliography}
 \end{document}

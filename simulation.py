@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-def run_simulation(expected_bids=50000, fee_per_bid_algo=0.003, algo_price_initial=0.12, num_iterations=10000, volatility=0.60, drift=0.0):
+def run_simulation(expected_bids=50000, fee_per_bid_algo=0.003, algo_price_initial=0.12, num_iterations=10000, volatility=0.9395, drift=0.0):
     # Strict Reproducibility
     np.random.seed(42)
 
